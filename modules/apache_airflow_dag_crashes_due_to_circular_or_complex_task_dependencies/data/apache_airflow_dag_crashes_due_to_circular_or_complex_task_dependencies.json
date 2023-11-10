@@ -1,0 +1,118 @@
+{
+  "name": "apache_airflow_dag_crashes_due_to_circular_or_complex_task_dependencies",
+  "description": "This incident type refers to situations where a DAG (Directed Acyclic Graph) in Apache Airflow, a popular platform for programmatically authoring, scheduling, and monitoring workflows, crashes due to circular or complex task dependencies. DAGs are used to define a workflow by specifying the order in which tasks should be executed. When there are circular dependencies between tasks, or when the dependencies are too complex, the DAG may not be able to execute properly, resulting in a crash. This can cause delays or failures in the workflow, which can impact critical business processes.",
+  "params": [
+    {
+      "name": "NAMESPACE",
+      "value": ""
+    },
+    {
+      "name": "POD_NAME",
+      "value": ""
+    },
+    {
+      "name": "AIRFLOW_POD_NAME",
+      "value": ""
+    },
+    {
+      "name": "MEMORY_LIMIT",
+      "value": ""
+    },
+    {
+      "name": "TASK_NAME",
+      "value": ""
+    },
+    {
+      "name": "DAG_NAME",
+      "value": ""
+    },
+    {
+      "name": "DAG_ID",
+      "value": ""
+    },
+    {
+      "name": "K8S_CLUSTER_NAME",
+      "value": ""
+    }
+  ],
+  "cells": [
+    {
+      "name": "cell_1",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Apache Airflow DAG Crashes Due to Circular or Complex Task Dependencies\nThis incident type refers to situations where a DAG (Directed Acyclic Graph) in Apache Airflow, a popular platform for programmatically authoring, scheduling, and monitoring workflows, crashes due to circular or complex task dependencies. DAGs are used to define a workflow by specifying the order in which tasks should be executed. When there are circular dependencies between tasks, or when the dependencies are too complex, the DAG may not be able to execute properly, resulting in a crash. This can cause delays or failures in the workflow, which can impact critical business processes."
+    },
+    {
+      "name": "cell_2",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Step 1: Check the status of the Airflow deployment"
+    },
+    {
+      "name": "cell_3",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl get deployments -n ${NAMESPACE}`"
+    },
+    {
+      "name": "cell_4",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Step 2: Check the logs of the Airflow pod"
+    },
+    {
+      "name": "cell_5",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | limit=1 | random=1 | `kubectl logs ${AIRFLOW_POD_NAME} -n ${NAMESPACE}`"
+    },
+    {
+      "name": "cell_6",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Step 3: Check the status of the DAGs"
+    },
+    {
+      "name": "cell_7",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE | `kubectl exec ${AIRFLOW_POD_NAME} -n ${NAMESPACE} airflow list_dags`"
+    },
+    {
+      "name": "cell_8",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Step 4: Check the status of the tasks within the DAG"
+    },
+    {
+      "name": "cell_9",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE | `kubectl exec ${AIRFLOW_POD_NAME} -n ${NAMESPACE} airflow list_tasks ${DAG_ID}`"
+    },
+    {
+      "name": "cell_10",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Step 5: Check the dependencies of the tasks within the DAG"
+    },
+    {
+      "name": "cell_11",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | namespace=$NAMESPACE | `kubectl exec ${AIRFLOW_POD_NAME} -n ${NAMESPACE} airflow list_tasks ${DAG_ID} --tree`"
+    },
+    {
+      "name": "cell_12",
+      "type": "MARKDOWN",
+      "enabled": true,
+      "content": "## Identify the specific task(s) causing the issue and break them down into smaller tasks that can be executed independently."
+    },
+    {
+      "name": "cell_13",
+      "type": "OP_LANG",
+      "enabled": true,
+      "content": "pod | k8s_cluster_name=$K8S_CLUSTER_NAME | app='shoreline' | random=1 | limit=1 | invoke_kubernetes_dag_tasks($POD_NAME, $TASK_NAME, $DAG_NAME)"
+    }
+  ]
+}
